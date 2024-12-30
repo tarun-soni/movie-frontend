@@ -4,22 +4,44 @@ import { useState } from 'react';
 import Input from '../input';
 import Button from '../button';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/app/context/auth-context';
+import { useMutation } from '@apollo/client';
+import { LOGIN_USER } from '@/app/graphql/mutations';
 
 export default function LoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-
+  const [error, setError] = useState('');
+  const { login } = useAuth();
   const router = useRouter();
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const [loginUser, { loading }] = useMutation(LOGIN_USER);
 
-    router.push('/home');
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+
+    try {
+      const { data } = await loginUser({
+        variables: { email, password },
+      });
+
+      const { token, ...userData } = data.login;
+      login(token, userData);
+      router.replace('/home');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to login');
+    }
   };
 
   return (
     <>
       <form onSubmit={handleSubmit} className="space-y-4 w-full max-w-sm">
+        {error && (
+          <div className="text-sm text-red-500 bg-red-50 p-2 rounded">
+            {error}
+          </div>
+        )}
         <div className="space-y-2">
           <Input
             type="email"
@@ -27,7 +49,7 @@ export default function LoginForm() {
             placeholder="Enter your email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            // required
+            required
           />
           <Input
             type="password"
@@ -35,14 +57,15 @@ export default function LoginForm() {
             placeholder="Enter your password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            // required
+            required
           />
         </div>
         <button
           type="submit"
-          className="w-full bg-primary text-primary-foreground py-2 px-4 rounded-md hover:opacity-90 transition-opacity"
+          disabled={loading || !email || !password}
+          className="w-full bg-primary text-primary-foreground py-2 px-4 rounded-md hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Login
+          {loading ? 'Logging in...' : 'Login'}
         </button>
       </form>
       <Button

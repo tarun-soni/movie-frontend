@@ -9,8 +9,6 @@ export async function GET(request: Request) {
     const query = searchParams.get('query');
     const page = searchParams.get('page') || '1';
 
-    console.log('API_KEY', API_KEY);
-
     let apiUrl = `${BASE_URL}/discover/movie?include_adult=false&include_video=false&language=en-US&page=${page}&sort_by=popularity.desc&api_key=${API_KEY}`;
 
     if (query) {

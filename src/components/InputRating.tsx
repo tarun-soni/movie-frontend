@@ -5,6 +5,8 @@ import { useMutation } from '@apollo/client';
 import { ADD_MOVIE_REVIEW } from '@/app/graphql/mutations';
 import { GET_MOVIE_REVIEWS } from '@/app/graphql/queries';
 import StarRating from './StarRating';
+import { useAuth } from '@/app/context/auth-context';
+import { useRouter } from 'next/navigation';
 
 interface InputRatingProps {
   movieId: number;
@@ -15,15 +17,10 @@ export default function InputRating({ movieId }: InputRatingProps) {
   const [reviewText, setReviewText] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string>('');
+  const { user, isAuthenticated } = useAuth();
+  const router = useRouter();
 
-  // { movieId, rating, reviewText, userId }
   const [addMovieReview] = useMutation(ADD_MOVIE_REVIEW, {
-    variables: {
-      movieId: movieId.toString(),
-      rating: rating,
-      reviewText: reviewText,
-      // userId: userId,
-    },
     refetchQueries: [
       {
         query: GET_MOVIE_REVIEWS,
@@ -34,6 +31,12 @@ export default function InputRating({ movieId }: InputRatingProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!isAuthenticated) {
+      router.push('/auth/login');
+      return;
+    }
+
     if (rating === 0) {
       setError('Please select a rating');
       return;
@@ -48,6 +51,7 @@ export default function InputRating({ movieId }: InputRatingProps) {
           movieId: movieId.toString(),
           rating: rating,
           reviewText: reviewText.trim(),
+          userId: user?._id,
         },
       });
 
@@ -60,6 +64,23 @@ export default function InputRating({ movieId }: InputRatingProps) {
       setIsSubmitting(false);
     }
   };
+
+  if (!isAuthenticated) {
+    return (
+      <div className="p-4 bg-muted rounded-lg text-center">
+        <p className="text-muted-foreground">
+          Please{' '}
+          <button
+            onClick={() => router.push('/auth/login')}
+            className="text-primary hover:underline"
+          >
+            login
+          </button>{' '}
+          to leave a review
+        </p>
+      </div>
+    );
+  }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 p-4 bg-muted rounded-lg">
@@ -87,9 +108,15 @@ export default function InputRating({ movieId }: InputRatingProps) {
         />
       </div>
 
+      {error && (
+        <div className="text-sm text-red-500 bg-red-50 p-2 rounded">
+          {error}
+        </div>
+      )}
+
       <button
         type="submit"
-        disabled={isSubmitting || !rating || !reviewText}
+        disabled={isSubmitting || !rating || !reviewText.trim()}
         className="w-full px-4 py-2 bg-primary text-primary-foreground rounded-md hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {isSubmitting ? 'Submitting...' : 'Submit Review'}

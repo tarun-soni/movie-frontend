@@ -4,7 +4,6 @@ import { Movie } from '@/app/services/movieService';
 import { redirect } from 'next/navigation';
 
 const MovieCard = ({ movie }: { movie: Movie }) => {
-  console.log('movie', movie);
   const handleMovieClick = (movieId: number) => {
     redirect(`/home/${movieId}`);
   };

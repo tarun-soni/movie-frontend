@@ -3,6 +3,7 @@ import { getPopularMovies } from '../services/movieService';
 import type { Movie } from '../services/movieService';
 import { redirect } from 'next/navigation';
 import MovieCard from '@/components/MovieCard';
+import LogoutButton from '@/components/LogoutButton';
 
 export default async function HomePage() {
   const movies = await getPopularMovies();
@@ -12,9 +13,7 @@ export default async function HomePage() {
       <div className="max-w-7xl mx-auto space-y-8">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">Movie Search</h1>
-          <button className="text-sm text-primary hover:underline">
-            Logout
-          </button>
+          <LogoutButton />
         </div>
         <Searchbar />
 

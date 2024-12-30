@@ -4,7 +4,7 @@ import { gql } from '@apollo/client';
 export const ADD_MOVIE_REVIEW = gql`
   mutation createMovieReview(
     $movieId: String!
-    $rating: Float!
+    $rating: Int!
     $reviewText: String!
     $userId: String!
   ) {
@@ -23,6 +23,17 @@ export const ADD_MOVIE_REVIEW = gql`
         name
         email
       }
+    }
+  }
+`;
+
+export const LOGIN_USER = gql`
+  mutation login($email: String!, $password: String!) {
+    login(email: $email, password: $password) {
+      _id
+      name
+      email
+      token
     }
   }
 `;

@@ -8,7 +8,6 @@ export interface Movie {
 }
 
 export async function getPopularMovies(page: number = 1): Promise<Movie[]> {
-  console.log('getPopularMovies');
   const response = await fetch(`http://localhost:3000/api/movies`, {
     method: 'GET',
     headers: {
@@ -16,7 +15,6 @@ export async function getPopularMovies(page: number = 1): Promise<Movie[]> {
     },
   });
 
-  console.log('response', response);
   if (!response.ok) {
     throw new Error('Failed to fetch popular movies');
   }
