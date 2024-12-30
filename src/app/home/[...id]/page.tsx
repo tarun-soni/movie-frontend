@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import MovieCard from '@/components/MovieCard';
 import UsersRating from '@/components/UsersRating';
+import InputRating from '@/components/InputRating';
 
 const Page = () => {
   const { id } = useParams();
@@ -32,7 +33,10 @@ const Page = () => {
           </div>
 
           <div className="w-full">
-            <UsersRating movieId={movie.id} />
+            <InputRating movieId={movie.id} />
+            <div className="mt-8">
+              <UsersRating movieId={movie.id} />
+            </div>
           </div>
         </div>
       ) : (

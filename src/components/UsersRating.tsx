@@ -2,6 +2,7 @@
 
 import { useQuery } from '@apollo/client';
 import { GET_MOVIE_REVIEWS } from '@/app/graphql/queries';
+import StarRating from './StarRating';
 
 interface UsersRatingProps {
   movieId: number;
@@ -65,7 +66,7 @@ export default function UsersRating({ movieId }: UsersRatingProps) {
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   <span className="text-primary font-medium">
-                    {review.rating}/5
+                    <StarRating value={review.rating} />
                   </span>
                   <span className="text-sm text-muted-foreground">
                     by User {review.user.name}
