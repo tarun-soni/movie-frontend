@@ -1,39 +1,33 @@
-import React from 'react';
+'use client';
+
+import { useState } from 'react';
 
 const Searchbar = () => {
+  const [query, setQuery] = useState('');
+
+  const handleSearch = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!query.trim()) return;
+  };
+
   return (
-    <div className="relative">
-      <input
-        type="search"
-        id="Search"
-        placeholder="Search for a movie"
-        className="w-full rounded-md border-gray-200 py-2.5 pe-10 shadow-sm sm:text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-white"
-      />
-
-      <span className="absolute inset-y-0 end-0 grid w-10 place-content-center">
+    <form onSubmit={handleSearch} className="w-full max-w-3xl mx-auto">
+      <div className="relative">
+        <input
+          type="search"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Search for movies..."
+          className="w-full px-4 py-2 rounded-lg border border-border bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+        />
         <button
-          type="button"
-          className="text-gray-600 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+          type="submit"
+          className="absolute right-2 top-1/2 -translate-y-1/2 px-4 py-1 bg-primary text-primary-foreground rounded-md hover:opacity-90 transition-opacity"
         >
-          <span className="sr-only">Search</span>
-
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth="1.5"
-            stroke="currentColor"
-            className="size-4"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
-            />
-          </svg>
+          Search
         </button>
-      </span>
-    </div>
+      </div>
+    </form>
   );
 };
 
