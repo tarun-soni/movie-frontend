@@ -58,3 +58,17 @@ export async function getMovieDetails(movieId: number): Promise<Movie> {
   }
   return response.json();
 }
+
+export async function getMovieById(movieId: number): Promise<Movie> {
+  const response = await fetch(`/api/movies/${movieId}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch movie details');
+  }
+  return response.json();
+}

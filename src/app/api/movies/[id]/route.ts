@@ -3,7 +3,6 @@ import { NextResponse } from 'next/server';
 
 export const API_KEY = process.env.NEXT_PUBLIC_TMDB_API_KEY || '';
 export const BASE_URL = 'https://api.themoviedb.org/3';
-export const API_URL = `${BASE_URL}/movie/popular?api_key=${API_KEY}&language=en-US&page=1`;
 
 export async function GET(
   request: Request,
@@ -11,7 +10,7 @@ export async function GET(
 ) {
   try {
     const response = await fetch(
-      `${BASE_URL}/movie/${params.id}?api_key=${API_KEY}&language=en-US`
+      `${BASE_URL}/movie/${params.id}?api_key=${API_KEY}`
     );
 
     if (!response.ok) {
