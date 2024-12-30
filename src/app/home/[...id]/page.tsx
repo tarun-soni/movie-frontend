@@ -4,7 +4,7 @@ import { getMovieById, Movie } from '@/app/services/movieService';
 import { useParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import MovieCard from '@/components/MovieCard';
-import ShowRating from '@/components/showRating';
+import UsersRating from '@/components/UsersRating';
 
 const Page = () => {
   const { id } = useParams();
@@ -26,16 +26,17 @@ const Page = () => {
   return (
     <div className="container mx-auto p-4 flex flex-col items-center justify-center mt-10">
       {movie ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 items-center justify-center">
-          <div className="flex flex-col items-center justify-center ">
+        <div className="flex flex-col md:flex-row gap-8 items-start justify-center w-full">
+          <div className="flex flex-col items-center justify-center w-full md:w-1/3">
             <MovieCard movie={movie} />
           </div>
-          <div className="flex flex-col items-center justify-start align-top border-2 border-primary rounded-md p-2">
-            Current Rating from TMDB- <ShowRating value={movie.vote_average} />
+
+          <div className="w-full">
+            <UsersRating movieId={movie.id} />
           </div>
         </div>
       ) : (
-        <div className="text-center">Loading...</div>
+        <div className="text-center text-lg font-medium">Loading...</div>
       )}
     </div>
   );
