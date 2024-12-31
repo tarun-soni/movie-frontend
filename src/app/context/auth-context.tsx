@@ -34,10 +34,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       try {
         setUser(JSON.parse(savedUser));
       } catch (e) {
-        console.error('Failed to parse user data');
+        console.error('Failed to parse user data', e);
         logout();
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const login = (newToken: string, newUser: User) => {

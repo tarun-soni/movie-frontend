@@ -7,7 +7,7 @@ export interface Movie {
   vote_average: number;
 }
 
-export async function getPopularMovies(page: number = 1): Promise<Movie[]> {
+export async function getPopularMovies(): Promise<Movie[]> {
   const response = await fetch(`http://localhost:3000/api/movies`, {
     method: 'GET',
     headers: {

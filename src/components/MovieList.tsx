@@ -31,7 +31,7 @@ export default function MovieList({ initialMovies }: MovieListProps) {
       const searchResults = await searchMovies(query);
       setMovies(searchResults);
     } catch (err) {
-      setError('Failed to search movies');
+      console.error('Failed to search movies', err);
     } finally {
       setIsLoading(false);
     }

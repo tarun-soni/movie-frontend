@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 
 interface SearchbarProps {
   onSearch: (query: string) => void;
@@ -9,7 +8,6 @@ interface SearchbarProps {
 
 export default function Searchbar({ onSearch }: SearchbarProps) {
   const [query, setQuery] = useState('');
-  const router = useRouter();
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
