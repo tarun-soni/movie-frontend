@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Input from '../input';
-import Button from '../button';
+
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/app/context/auth-context';
 import { useMutation } from '@apollo/client';
@@ -68,13 +68,6 @@ export default function LoginForm() {
           {loading ? 'Logging in...' : 'Login'}
         </button>
       </form>
-      <Button
-        variant="secondary"
-        onClick={() => router.push('/auth/signup')}
-        className="w-full"
-      >
-        Sign Up
-      </Button>
     </>
   );
 }

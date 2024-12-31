@@ -2,23 +2,52 @@
 
 import { useState } from 'react';
 import Input from '../input';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/app/context/auth-context';
+import { useMutation } from '@apollo/client';
+import { SIGNUP_USER } from '@/app/graphql/mutations';
 
 export default function SignupForm() {
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
+  const [error, setError] = useState('');
+  const { login } = useAuth();
+  const router = useRouter();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [signupUser, { loading }] = useMutation(SIGNUP_USER);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
+
+    try {
+      const response = await signupUser({
+        variables: { name, email, password },
+      });
+
+      console.log(response);
+
+      const { token, ...userData } = response.data.createUser;
+      login(token, userData);
+      router.replace('/home');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to signup');
+    }
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 w-full max-w-sm">
+      {error && (
+        <div className="text-sm text-red-500 bg-red-50 p-2 rounded">
+          {error}
+        </div>
+      )}
       <div className="space-y-2">
         <Input
           type="text"
-          label="Full Name"
-          placeholder="Enter your full name"
+          label="Name"
+          placeholder="Enter your name"
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
@@ -42,9 +71,10 @@ export default function SignupForm() {
       </div>
       <button
         type="submit"
-        className="w-full bg-primary text-primary-foreground py-2 px-4 rounded-md hover:opacity-90 transition-opacity"
+        disabled={loading || !name || !email || !password}
+        className="w-full bg-primary text-primary-foreground py-2 px-4 rounded-md hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        Sign Up
+        {loading ? 'Signing up...' : 'Sign Up'}
       </button>
     </form>
   );

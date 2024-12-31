@@ -7,24 +7,25 @@ export interface Movie {
   vote_average: number;
 }
 
-export async function getPopularMovies(): Promise<Movie[]> {
-  const apiUrl =
+export async function getPopularMovies() {
+  const baseUrl =
     process.env.NODE_ENV === 'development'
       ? 'http://localhost:3000'
       : process.env.NEXT_PUBLIC_DEPLOY_URL;
 
-  const response = await fetch(`${apiUrl}/api/movies`, {
+  const apiUrl = `${baseUrl}/api/movies`;
+
+  const response = await fetch(apiUrl, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
     },
   });
 
-  console.log('response', response);
-
   if (!response.ok) {
     throw new Error('Failed to fetch popular movies');
   }
+
   return response.json();
 }
 
