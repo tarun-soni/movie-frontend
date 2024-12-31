@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 // import { BASE_URL, API_KEY } from '@/app/utils/constants';
 
-export const API_KEY = process.env.NEXT_PUBLIC_TMDB_API_KEY || '';
-export const BASE_URL = 'https://api.themoviedb.org/3';
+const API_KEY = process.env.NEXT_PUBLIC_TMDB_API_KEY || '';
+const BASE_URL = 'https://api.themoviedb.org/3';
 
 export async function GET(
   request: Request,
