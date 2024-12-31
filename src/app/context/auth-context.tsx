@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Cookies from 'js-cookie';
 
 interface User {
   _id: string;
@@ -25,27 +26,37 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
 
   useEffect(() => {
-    const savedToken = localStorage.getItem('token');
-    const savedUser = localStorage.getItem('user');
+    const savedToken = Cookies.get('token');
+    const savedUser = Cookies.get('user');
 
     if (savedToken && savedUser) {
       setToken(savedToken);
-      setUser(JSON.parse(savedUser));
+      try {
+        setUser(JSON.parse(savedUser));
+      } catch (e) {
+        console.error('Failed to parse user data');
+        logout();
+      }
     }
   }, []);
 
   const login = (newToken: string, newUser: User) => {
     setToken(newToken);
     setUser(newUser);
-    localStorage.setItem('token', newToken);
-    localStorage.setItem('user', JSON.stringify(newUser));
+
+    // Set cookies with expiry
+    Cookies.set('token', newToken, { expires: 7 }); // 7 days
+    Cookies.set('user', JSON.stringify(newUser), { expires: 7 });
+
+    router.push('/home');
   };
 
   const logout = () => {
+    console.log('Loggedout');
     setToken(null);
     setUser(null);
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    Cookies.remove('token');
+    Cookies.remove('user');
     router.replace('/auth/login');
   };
 

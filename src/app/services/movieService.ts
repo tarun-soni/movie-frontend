@@ -58,6 +58,7 @@ export async function getMovieDetails(movieId: number): Promise<Movie> {
 }
 
 export async function getMovieById(movieId: number): Promise<Movie> {
+  if (!movieId) throw new Error('Movie ID is required');
   const response = await fetch(`/api/movies/${movieId}`, {
     method: 'GET',
     headers: {

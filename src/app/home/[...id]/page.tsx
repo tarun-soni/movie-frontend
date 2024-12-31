@@ -14,6 +14,7 @@ const Page = () => {
   const [movie, setMovie] = useState<Movie | null>(null);
 
   useEffect(() => {
+    console.log('id', id);
     const fetchMovie = async () => {
       if (id) {
         const movieData = await getMovieById(Number(id));

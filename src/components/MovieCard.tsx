@@ -2,15 +2,13 @@
 
 import { Movie } from '@/app/services/movieService';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 interface MovieCardProps {
   movie: Movie;
 }
 
 export default function MovieCard({ movie }: MovieCardProps) {
-  const router = useRouter();
-
   const getYear = (dateString: string) => {
     if (!dateString) return 'N/A';
     const date = new Date(dateString);
@@ -18,9 +16,9 @@ export default function MovieCard({ movie }: MovieCardProps) {
   };
 
   return (
-    <div
-      onClick={() => router.push(`/home/${movie.id}`)}
-      className="bg-muted rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow cursor-pointer"
+    <Link
+      href={`/home/${movie.id}`}
+      className="block bg-muted rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all hover:scale-[1.02]"
     >
       {movie.poster_path ? (
         <div className="relative aspect-[2/3] w-full">
@@ -46,6 +44,6 @@ export default function MovieCard({ movie }: MovieCardProps) {
           <span>{movie.vote_average?.toFixed(1) || 'N/A'} ★</span>
         </div>
       </div>
-    </div>
+    </Link>
   );
 }
