@@ -8,12 +8,10 @@ export interface Movie {
 }
 
 export async function getPopularMovies() {
-  const baseUrl =
+  const apiUrl =
     process.env.NODE_ENV === 'development'
-      ? 'http://localhost:3000'
-      : process.env.NEXT_PUBLIC_DEPLOY_URL;
-
-  const apiUrl = `${baseUrl}/api/movies`;
+      ? 'http://localhost:3000/api/movies'
+      : '/api/movies';
 
   const response = await fetch(apiUrl, {
     method: 'GET',

@@ -8,31 +8,43 @@ import {
 } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 import { AuthProvider } from '../context/auth-context';
+import { useMemo } from 'react';
+import Cookies from 'js-cookie';
 
-const httpLink = createHttpLink({
-  uri: process.env.NEXT_PUBLIC_GRAPHQL_URL,
-});
+function makeClient() {
+  const httpLink = createHttpLink({
+    uri: process.env.NEXT_PUBLIC_GRAPHQL_URL,
+  });
 
-const authLink = setContext((_, { headers }) => {
-  // Get the authentication token from local storage
-  const token = localStorage.getItem('token');
+  const authLink = setContext((_, { headers }) => {
+    const token = Cookies.get('token');
+    return {
+      headers: {
+        ...headers,
+        authorization: token ? `Bearer ${token}` : '',
+      },
+    };
+  });
 
-  console.log('token', token);
-  // Return the headers to the context so httpLink can read them
-  return {
-    headers: {
-      ...headers,
-      authorization: token ? `Bearer ${token}` : '',
+  return new ApolloClient({
+    link: authLink.concat(httpLink),
+    cache: new InMemoryCache(),
+    defaultOptions: {
+      watchQuery: {
+        fetchPolicy: 'no-cache',
+        errorPolicy: 'ignore',
+      },
+      query: {
+        fetchPolicy: 'no-cache',
+        errorPolicy: 'all',
+      },
     },
-  };
-});
-
-const client = new ApolloClient({
-  link: authLink.concat(httpLink),
-  cache: new InMemoryCache(),
-});
+  });
+}
 
 export function ApolloWrapper({ children }: { children: React.ReactNode }) {
+  const client = useMemo(() => makeClient(), []);
+
   return (
     <AuthProvider>
       <ApolloProvider client={client}>{children}</ApolloProvider>
