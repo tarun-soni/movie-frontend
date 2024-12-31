@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useEditor, EditorContent } from '@tiptap/react';
+import { useEditor, EditorContent, Editor } from '@tiptap/react';
 import Document from '@tiptap/extension-document';
 import Paragraph from '@tiptap/extension-paragraph';
 import Text from '@tiptap/extension-text';
@@ -17,7 +17,7 @@ interface InputRatingProps {
   onReviewAdded?: () => void;
 }
 
-const MenuBar = ({ editor }: { editor: any }) => {
+const MenuBar = ({ editor }: { editor: Editor }) => {
   if (!editor) {
     return null;
   }
