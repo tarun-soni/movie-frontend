@@ -1,44 +1,51 @@
 'use client';
 
 import { Movie } from '@/app/services/movieService';
-import { redirect } from 'next/navigation';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
-const MovieCard = ({ movie }: { movie: Movie }) => {
-  const handleMovieClick = (movieId: number) => {
-    redirect(`/home/${movieId}`);
+interface MovieCardProps {
+  movie: Movie;
+}
+
+export default function MovieCard({ movie }: MovieCardProps) {
+  const router = useRouter();
+
+  const getYear = (dateString: string) => {
+    if (!dateString) return 'N/A';
+    const date = new Date(dateString);
+    return isNaN(date.getTime()) ? 'N/A' : date.getFullYear().toString();
   };
 
   return (
     <div
-      key={movie.id}
-      className="bg-muted rounded-lg overflow-hidden shadow-md"
-      onClick={() => handleMovieClick(movie.id)}
+      onClick={() => router.push(`/home/${movie.id}`)}
+      className="bg-muted rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow cursor-pointer"
     >
-      {movie.poster_path && (
-        <img
-          src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-          alt={movie.title}
-          className="w-full h-64 object-cover"
-        />
+      {movie.poster_path ? (
+        <div className="relative aspect-[2/3] w-full">
+          <Image
+            src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+            alt={movie.title}
+            fill
+            className="object-cover"
+          />
+        </div>
+      ) : (
+        <div className="aspect-[2/3] w-full bg-gray-200 flex items-center justify-center">
+          <span className="text-gray-400">No Image</span>
+        </div>
       )}
       <div className="p-4">
-        <h2 className="text-lg font-bold text-foreground line-clamp-1">
-          {movie.title}
-        </h2>
+        <h3 className="font-medium text-lg line-clamp-1">{movie.title}</h3>
         <p className="text-sm text-muted-foreground line-clamp-2 mt-1">
-          {movie.overview}
+          {movie.overview || 'No description available'}
         </p>
-        <div className="mt-2 flex items-center justify-between">
-          <span className="text-sm text-muted-foreground">
-            {new Date(movie.release_date).getFullYear()}
-          </span>
-          <span className="text-sm font-medium text-primary">
-            {movie.vote_average.toFixed(1)} ★
-          </span>
+        <div className="mt-2 flex items-center justify-between text-sm text-muted-foreground">
+          <span>{getYear(movie.release_date)}</span>
+          <span>{movie.vote_average?.toFixed(1) || 'N/A'} ★</span>
         </div>
       </div>
     </div>
   );
-};
-
-export default MovieCard;
+}
