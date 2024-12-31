@@ -28,7 +28,7 @@ export async function searchMovies(
   if (!query) return [];
 
   const response = await fetch(
-    `/api/movies?query=${encodeURIComponent(query)}&page=${page}`,
+    `/api/movies/search?query=${encodeURIComponent(query)}&page=${page}`,
     {
       method: 'GET',
       headers: {
