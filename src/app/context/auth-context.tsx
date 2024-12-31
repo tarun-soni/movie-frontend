@@ -49,15 +49,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     Cookies.set('token', newToken, { expires: 7 }); // 7 days
     Cookies.set('user', JSON.stringify(newUser), { expires: 7 });
 
-    router.push('/home');
+    router.replace('/home');
   };
 
   const logout = () => {
-    console.log('Loggedout');
-    setToken(null);
-    setUser(null);
     Cookies.remove('token');
     Cookies.remove('user');
+    setToken(null);
+    setUser(null);
     router.replace('/auth/login');
   };
 

@@ -1,16 +1,16 @@
 import { NextResponse } from 'next/server';
-// import { BASE_URL, API_KEY } from '@/app/utils/constants';
+import { NextRequest } from 'next/server';
 
 const API_KEY = process.env.NEXT_PUBLIC_TMDB_API_KEY || '';
 const BASE_URL = 'https://api.themoviedb.org/3';
 
 export async function GET(
-  request: Request,
+  request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
     const response = await fetch(
-      `${BASE_URL}/movie/${params.id}?api_key=${API_KEY}`
+      `${BASE_URL}/movie/${params.id}?api_key=${API_KEY}&language=en-US`
     );
 
     if (!response.ok) {
