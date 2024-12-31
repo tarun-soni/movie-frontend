@@ -8,12 +8,6 @@ interface UsersRatingProps {
   movieId: number;
 }
 
-// _id
-// movieId
-// rating
-// reviewText
-// userId
-
 interface Review {
   _id: string;
   movieId: string;
@@ -29,9 +23,10 @@ interface Review {
 export default function UsersRating({ movieId }: UsersRatingProps) {
   const { loading, error, data } = useQuery(GET_MOVIE_REVIEWS, {
     variables: { movieId: movieId.toString() },
+    fetchPolicy: 'cache-and-network',
   });
 
-  if (loading) {
+  if (loading && !data) {
     return (
       <div className="animate-pulse p-4 space-y-4">
         <div className="h-4 bg-gray-200 rounded w-3/4"></div>
@@ -68,12 +63,15 @@ export default function UsersRating({ movieId }: UsersRatingProps) {
                     <StarRating value={review.rating} />
                   </span>
                   <span className="text-sm text-muted-foreground">
-                    by User {review.user.name}
+                    by {review.user.name}
                   </span>
                 </div>
               </div>
               {review?.reviewText && (
-                <p className="text-sm text-foreground">{review.reviewText}</p>
+                <div
+                  className="prose prose-sm max-w-none text-foreground [&>h1]:text-2xl [&>h1]:font-bold [&>h1]:mb-4 [&>h2]:text-xl [&>h2]:font-semibold [&>h2]:mb-3 [&>blockquote]:border-l-4 [&>blockquote]:border-primary/50 [&>blockquote]:pl-4 [&>blockquote]:italic [&>blockquote]:my-2 [&>p]:mb-2 [&>p:last-child]:mb-0"
+                  dangerouslySetInnerHTML={{ __html: review.reviewText }}
+                />
               )}
             </div>
           ))}

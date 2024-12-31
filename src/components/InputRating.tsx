@@ -1,26 +1,87 @@
 'use client';
 
 import { useState } from 'react';
+import { useEditor, EditorContent, Editor } from '@tiptap/react';
+import Document from '@tiptap/extension-document';
+import Paragraph from '@tiptap/extension-paragraph';
+import Text from '@tiptap/extension-text';
+import Heading from '@tiptap/extension-heading';
+import Blockquote from '@tiptap/extension-blockquote';
 import { useMutation } from '@apollo/client';
 import { ADD_MOVIE_REVIEW } from '@/app/graphql/mutations';
-import { GET_MOVIE_REVIEWS } from '@/app/graphql/queries';
-import StarRating from './StarRating';
 import { useAuth } from '@/app/context/auth-context';
-import { useRouter } from 'next/navigation';
+import { GET_MOVIE_REVIEWS } from '@/app/graphql/queries';
 
 interface InputRatingProps {
   movieId: number;
+  onReviewAdded?: () => void;
 }
 
-export default function InputRating({ movieId }: InputRatingProps) {
-  const [rating, setRating] = useState<number>(0);
-  const [reviewText, setReviewText] = useState<string>('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string>('');
-  const { user, isAuthenticated } = useAuth();
-  const router = useRouter();
+const MenuBar = ({ editor }: { editor: Editor }) => {
+  if (!editor) {
+    return null;
+  }
 
-  const [addMovieReview] = useMutation(ADD_MOVIE_REVIEW, {
+  const handleButtonClick =
+    (callback: () => boolean) => (e: React.MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      callback();
+    };
+
+  return (
+    <div className="flex flex-wrap gap-2 p-2 border-b border-border bg-muted rounded-t-md">
+      <button
+        type="button"
+        onClick={handleButtonClick(() =>
+          editor.chain().focus().toggleHeading({ level: 1 }).run()
+        )}
+        className={`px-2 py-1 rounded ${
+          editor.isActive('heading', { level: 1 })
+            ? 'bg-primary text-primary-foreground'
+            : 'bg-background hover:bg-muted-foreground/10'
+        }`}
+      >
+        h1
+      </button>
+      <button
+        type="button"
+        onClick={handleButtonClick(() =>
+          editor.chain().focus().toggleHeading({ level: 2 }).run()
+        )}
+        className={`px-2 py-1 rounded ${
+          editor.isActive('heading', { level: 2 })
+            ? 'bg-primary text-primary-foreground'
+            : 'bg-background hover:bg-muted-foreground/10'
+        }`}
+      >
+        h2
+      </button>
+      <button
+        type="button"
+        onClick={handleButtonClick(() =>
+          editor.chain().focus().toggleBlockquote().run()
+        )}
+        className={`px-2 py-1 rounded ${
+          editor.isActive('blockquote')
+            ? 'bg-primary text-primary-foreground'
+            : 'bg-background hover:bg-muted-foreground/10'
+        }`}
+      >
+        quote
+      </button>
+    </div>
+  );
+};
+
+export default function InputRating({
+  movieId,
+  onReviewAdded,
+}: InputRatingProps) {
+  const [rating, setRating] = useState(0);
+  const [error, setError] = useState('');
+  const { user } = useAuth();
+  const [addMovieReview, { loading }] = useMutation(ADD_MOVIE_REVIEW, {
     refetchQueries: [
       {
         query: GET_MOVIE_REVIEWS,
@@ -29,11 +90,36 @@ export default function InputRating({ movieId }: InputRatingProps) {
     ],
   });
 
+  const editor = useEditor({
+    extensions: [
+      Document,
+      Paragraph,
+      Text,
+      Heading.configure({
+        levels: [1, 2],
+        HTMLAttributes: {
+          class: 'font-bold',
+        },
+      }),
+      Blockquote.configure({
+        HTMLAttributes: {
+          class: 'border-l-4 border-primary/50 pl-4 italic',
+        },
+      }),
+    ],
+    content: '',
+    editorProps: {
+      attributes: {
+        class:
+          'prose prose-sm max-w-none focus:outline-none min-h-[100px] p-4 border-x border-b border-border rounded-b-md bg-background [&>h1]:text-2xl [&>h1]:font-bold [&>h1]:mb-4 [&>h2]:text-xl [&>h2]:font-semibold [&>h2]:mb-3 [&>blockquote]:my-2 [&>p]:mb-2',
+      },
+    },
+  });
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!isAuthenticated) {
-      router.push('/auth/login');
+    if (!user?._id) {
+      setError('Please login to submit a review');
       return;
     }
 
@@ -42,84 +128,73 @@ export default function InputRating({ movieId }: InputRatingProps) {
       return;
     }
 
-    setIsSubmitting(true);
-    setError('');
+    const reviewText = editor?.getHTML() || '';
+    if (!reviewText.trim()) {
+      setError('Please write a review');
+      return;
+    }
 
     try {
       await addMovieReview({
         variables: {
           movieId: movieId.toString(),
-          rating: rating,
-          reviewText: reviewText.trim(),
-          userId: user?._id,
+          rating,
+          reviewText,
+          userId: user._id,
         },
       });
 
       // Reset form
       setRating(0);
-      setReviewText('');
+      editor?.commands.setContent('');
+      onReviewAdded?.();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to submit review');
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
-  if (!isAuthenticated) {
-    return (
-      <div className="p-4 bg-muted rounded-lg text-center">
-        <p className="text-muted-foreground">
-          Please{' '}
-          <button
-            onClick={() => router.push('/auth/login')}
-            className="text-primary hover:underline"
-          >
-            login
-          </button>{' '}
-          to leave a review
-        </p>
-      </div>
-    );
-  }
-
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 p-4 bg-muted rounded-lg">
-      <div className="space-y-2">
-        <label className="block text-sm font-medium">Your Rating</label>
-        <div className="flex items-center gap-2">
-          <StarRating value={rating} onChange={setRating} isInteractive />
-          <span className="text-sm text-muted-foreground">
-            {rating > 0 ? `${rating} stars` : 'Select rating'}
-          </span>
-        </div>
-      </div>
-
-      <div className="space-y-2">
-        <label htmlFor="review" className="block text-sm font-medium">
-          Your Review
-        </label>
-        <textarea
-          id="review"
-          rows={4}
-          value={reviewText}
-          onChange={(e) => setReviewText(e.target.value)}
-          placeholder="Write your thoughts about the movie..."
-          className="w-full px-3 py-2 border border-border rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
-        />
-      </div>
-
+    <form onSubmit={handleSubmit} className="space-y-4">
       {error && (
         <div className="text-sm text-red-500 bg-red-50 p-2 rounded">
           {error}
         </div>
       )}
-
+      <div className="space-y-2">
+        <label className="block text-sm font-medium">Rating</label>
+        <div className="flex gap-2">
+          {[1, 2, 3, 4, 5].map((value) => (
+            <button
+              key={value}
+              type="button"
+              onClick={() => setRating(value)}
+              className={`p-2 rounded-md ${
+                rating >= value
+                  ? 'text-yellow-500 hover:text-yellow-600'
+                  : 'text-gray-300 hover:text-gray-400'
+              }`}
+            >
+              ★
+            </button>
+          ))}
+        </div>
+      </div>
+      <div className="space-y-2">
+        <label className="block text-sm font-medium">Your Review</label>
+        <div className="border rounded-md overflow-hidden">
+          <MenuBar editor={editor} />
+          <EditorContent editor={editor} />
+        </div>
+        <div className="flex justify-between text-xs text-muted-foreground">
+          <span>Use toolbar for formatting</span>
+        </div>
+      </div>
       <button
         type="submit"
-        disabled={isSubmitting || !rating || !reviewText.trim()}
-        className="w-full px-4 py-2 bg-primary text-primary-foreground rounded-md hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+        disabled={loading || !rating}
+        className="w-full bg-primary text-primary-foreground py-2 px-4 rounded-md hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        {isSubmitting ? 'Submitting...' : 'Submit Review'}
+        {loading ? 'Submitting...' : 'Submit Review'}
       </button>
     </form>
   );
