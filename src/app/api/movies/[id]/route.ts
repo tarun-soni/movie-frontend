@@ -6,7 +6,6 @@ const BASE_URL = 'https://api.themoviedb.org/3';
 export async function GET(request: NextRequest) {
   const params = request.nextUrl.pathname.split('/').pop();
 
-  console.log('params', params);
   try {
     const response = await fetch(
       `${BASE_URL}/movie/${params}?api_key=${API_KEY}&language=en-US`

@@ -26,8 +26,6 @@ export default function SignupForm() {
         variables: { name, email, password },
       });
 
-      console.log(response);
-
       const { token, ...userData } = response.data.createUser;
       login(token, userData);
       router.replace('/home');

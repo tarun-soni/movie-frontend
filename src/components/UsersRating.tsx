@@ -27,7 +27,6 @@ interface Review {
 }
 
 export default function UsersRating({ movieId }: UsersRatingProps) {
-  console.log('movieId', movieId);
   const { loading, error, data } = useQuery(GET_MOVIE_REVIEWS, {
     variables: { movieId: movieId.toString() },
   });
