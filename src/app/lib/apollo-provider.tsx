@@ -14,9 +14,9 @@ const GRAPHQL_URL =
     ? 'http://localhost:4000/graphql'
     : 'https://next-movie-backend-jet.vercel.app/graphql';
 
-console.log('GRAPHQL_URL', GRAPHQL_URL);
 const httpLink = createHttpLink({
   uri: GRAPHQL_URL,
+  credentials: 'include',
 });
 
 const authLink = setContext((_, { headers }) => {
@@ -33,6 +33,7 @@ const authLink = setContext((_, { headers }) => {
 const client = new ApolloClient({
   link: authLink.concat(httpLink),
   cache: new InMemoryCache(),
+  credentials: 'include',
 });
 
 export function ApolloWrapper({ children }: { children: React.ReactNode }) {

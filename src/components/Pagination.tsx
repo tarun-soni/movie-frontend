@@ -11,8 +11,6 @@ const Pagination = (props) => {
     setPagesToShow,
   } = props;
 
-  console.log('pagination render');
-
   const prevButtonHandler = () => {
     const _pagesToShow = [...pagesToShow];
     _pagesToShow.unshift(pagesToShow[0] - 1);
@@ -24,16 +22,13 @@ const Pagination = (props) => {
   };
   const nextButtonHandler = () => {
     // if the current page is not in the pagesToShow array, shift it
-    // console.log('pagesToShow', pagesToShow);
 
     const _pagesToShow = [
       ...pagesToShow,
       pagesToShow[pagesToShow.length - 1] + 1,
     ];
-    console.log('_pagesToShow', _pagesToShow);
 
     _pagesToShow.shift();
-    console.log('_pagesToShow', _pagesToShow);
 
     setPagesToShow(_pagesToShow);
 

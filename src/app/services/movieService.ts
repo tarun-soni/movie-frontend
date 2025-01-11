@@ -13,8 +13,6 @@ export async function getPopularMovies(page: number = 1) {
       ? `http://localhost:3000/api/movies?page=${page}`
       : `/api/movies?page=${page}`;
 
-  console.log('apiUrl', apiUrl);
-
   const response = await fetch(apiUrl, {
     method: 'GET',
     headers: {
