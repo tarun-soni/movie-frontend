@@ -7,11 +7,15 @@ export interface Movie {
   vote_average: number;
 }
 
-export async function getPopularMovies() {
+export async function getPopularMovies(page: number = 1) {
   const apiUrl =
-    process.env.NODE_ENV === 'development'
-      ? 'http://localhost:3000/api/movies'
-      : '/api/movies';
+    process.env.NEXT_PUBLIC_NODE_ENV === 'development'
+      ? `http://localhost:3000/api/movies?page=${page}`
+      : `/api/movies?page=${page}`;
+  const url =
+    'https://api.themoviedb.org/3/movie/popular?language=en-US&page=1';
+
+  console.log('apiUrl', apiUrl);
 
   const response = await fetch(apiUrl, {
     method: 'GET',

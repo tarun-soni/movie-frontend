@@ -9,8 +9,14 @@ import {
 import { setContext } from '@apollo/client/link/context';
 import { AuthProvider } from '../context/auth-context';
 
+const GRAPHQL_URL =
+  process.env.NEXT_PUBLIC_NODE_ENV === 'development'
+    ? 'http://localhost:4000/graphql'
+    : 'https://next-movie-backend-jet.vercel.app/graphql';
+
+console.log('GRAPHQL_URL', GRAPHQL_URL);
 const httpLink = createHttpLink({
-  uri: process.env.NEXT_PUBLIC_GRAPHQL_URL || 'http://localhost:4000/graphql',
+  uri: GRAPHQL_URL,
 });
 
 const authLink = setContext((_, { headers }) => {

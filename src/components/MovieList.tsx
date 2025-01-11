@@ -1,13 +1,18 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState, Dispatch, SetStateAction } from 'react';
 import { searchMovies } from '@/app/services/movieService';
 import type { Movie } from '@/app/services/movieService';
 import MovieCard from './MovieCard';
 import Searchbar from './searchbar';
+import Button from './button';
+import Pagination from './Pagination';
 
 interface MovieListProps {
   initialMovies: Movie[];
+  currentPage: number;
+  setCurrentPage: Dispatch<SetStateAction<number>>;
+  totalPages: number;
 }
 
 export default function MovieList({ initialMovies }: MovieListProps) {
@@ -15,6 +20,10 @@ export default function MovieList({ initialMovies }: MovieListProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [currentQuery, setCurrentQuery] = useState('');
+
+  // useEffect(() => {
+  //   setMovies(initialMovies);
+  // }, [initialMovies]);
 
   const handleSearch = async (query: string) => {
     setCurrentQuery(query);
@@ -67,11 +76,22 @@ export default function MovieList({ initialMovies }: MovieListProps) {
           ))}
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {movies.map((movie) => (
-            <MovieCard key={movie.id} movie={movie} />
-          ))}
-        </div>
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {movies.map((movie) => (
+              <MovieCard key={movie.id} movie={movie} />
+            ))}
+          </div>
+          <div className="w-full flex flex-row justify-center ">
+            {/* <Pagination
+              onPrevClick={onPrevClick}
+              onNextClick={onNextClick}
+              totalPages={totalPages}
+              currentPage={currentPage}
+              onPageClick={onPageClick}
+            /> */}
+          </div>
+        </>
       )}
     </div>
   );

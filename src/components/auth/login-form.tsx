@@ -9,8 +9,8 @@ import { useMutation } from '@apollo/client';
 import { LOGIN_USER } from '@/app/graphql/mutations';
 
 export default function LoginForm() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('t2@gmail.com');
+  const [password, setPassword] = useState('t2@1234');
   const [error, setError] = useState('');
   const { login } = useAuth();
   const router = useRouter();

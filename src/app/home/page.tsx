@@ -5,27 +5,28 @@ import { getPopularMovies } from '@/app/services/movieService';
 import LogoutButton from '@/components/LogoutButton';
 import { useEffect, useState } from 'react';
 import type { Movie } from '@/app/services/movieService';
+import { GET_POPULAR_MOVIES } from '../graphql/queries';
+import { useQuery } from '@apollo/client';
+import Pagination from '@/components/Pagination';
 
 export default function HomePage() {
-  const [movies, setMovies] = useState<Movie[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+
+  const [pagesToShow, setPagesToShow] = useState([1, 2, 3, 4, 5]);
+
+  const { data, loading, refetch, error } = useQuery(GET_POPULAR_MOVIES, {
+    variables: {
+      pageNumber: currentPage,
+    },
+    onCompleted: (data) => {
+      setTotalPages(data.getGraphqlPopularMovies.total_pages);
+    },
+  });
 
   useEffect(() => {
-    async function loadMovies() {
-      try {
-        const data = await getPopularMovies();
-        setMovies(data);
-      } catch (err) {
-        setError('Failed to load movies');
-        console.error(err);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    loadMovies();
-  }, []);
+    refetch();
+  }, [currentPage]);
 
   return (
     <div className="min-h-screen p-4 sm:p-6 lg:p-8">
@@ -35,10 +36,12 @@ export default function HomePage() {
           <LogoutButton />
         </div>
         {error ? (
-          <div className="text-red-500 bg-red-50 p-4 rounded-lg">{error}</div>
-        ) : isLoading ? (
+          <div className="text-red-500 bg-red-50 p-4 rounded-lg">
+            {error?.message || 'Failed to fetch popular movies'}
+          </div>
+        ) : loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {[...Array(8)].map((_, i) => (
+            {[...Array(20)].map((_, i) => (
               <div
                 key={i}
                 className="bg-muted animate-pulse rounded-lg h-[400px]"
@@ -46,7 +49,25 @@ export default function HomePage() {
             ))}
           </div>
         ) : (
-          <MovieList initialMovies={movies} />
+          <>
+            <MovieList
+              initialMovies={data?.getGraphqlPopularMovies.results}
+              currentPage={currentPage}
+              setCurrentPage={setCurrentPage}
+              totalPages={totalPages}
+            />
+            <Pagination
+              onPrevClick={() => setCurrentPage(currentPage - 1)}
+              onNextClick={() => setCurrentPage(currentPage + 1)}
+              totalPages={totalPages}
+              currentPage={currentPage}
+              onPageClick={(pageNumber) => {
+                setCurrentPage(pageNumber);
+              }}
+              pagesToShow={pagesToShow}
+              setPagesToShow={setPagesToShow}
+            />
+          </>
         )}
       </div>
     </div>

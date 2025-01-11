@@ -1,24 +1,33 @@
 import React from 'react';
 
-interface ButtonProps extends React.HTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary';
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: 'primary' | 'secondary' | 'ghost';
   children: React.ReactNode;
 }
 
 const Button: React.FC<ButtonProps> = ({
   variant = 'primary',
   children,
+  disabled = false,
   ...rest
 }) => {
-  const variantClasses =
-    variant === 'primary'
-      ? 'bg-primary text-primary-foreground hover:bg-transparent hover:text-primary'
-      : 'border border-primary text-primary hover:bg-primary hover:text-primary-foreground';
+  const baseClasses =
+    'inline-block rounded px-4 py-2 text-sm font-medium focus:outline-none focus:ring';
+  const disabledClasses = 'opacity-50 cursor-not-allowed';
+
+  const variantClasses = {
+    primary: 'bg-primary text-primary-foreground hover:bg-primary-dark',
+    secondary:
+      'border border-primary text-primary hover:bg-primary-light hover:text-primary-foreground',
+    ghost: 'bg-transparent text-primary hover:bg-primary-light',
+  };
+
+  const resolvedClasses = `${baseClasses} ${variantClasses[variant] || ''} ${
+    disabled ? disabledClasses : ''
+  }`;
+
   return (
-    <button
-      className={`inline-block rounded border border-indigo-600 bg-indigo-600 px-12 py-3 text-sm font-medium text-white hover:bg-transparent hover:text-indigo-600 focus:outline-none focus:ring active:text-indigo-500 ${variantClasses}`}
-      {...rest}
-    >
+    <button className={resolvedClasses} disabled={disabled} {...rest}>
       {children}
     </button>
   );
