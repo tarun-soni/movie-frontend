@@ -27,7 +27,10 @@ export default function SignupForm() {
       });
 
       const { token, ...userData } = response.data.createUser;
-      login(token, userData);
+
+      login(userData);
+      localStorage.setItem('token', token);
+
       router.replace('/home');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to signup');
