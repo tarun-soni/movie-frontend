@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react';
 import Button from './button';
 
 const Pagination = (props) => {
@@ -15,7 +14,7 @@ const Pagination = (props) => {
   console.log('pagination render');
 
   const prevButtonHandler = () => {
-    let _pagesToShow = [...pagesToShow];
+    const _pagesToShow = [...pagesToShow];
     _pagesToShow.unshift(pagesToShow[0] - 1);
     _pagesToShow.pop();
 

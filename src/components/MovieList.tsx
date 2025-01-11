@@ -5,8 +5,6 @@ import { searchMovies } from '@/app/services/movieService';
 import type { Movie } from '@/app/services/movieService';
 import MovieCard from './MovieCard';
 import Searchbar from './searchbar';
-import Button from './button';
-import Pagination from './Pagination';
 
 interface MovieListProps {
   initialMovies: Movie[];
@@ -21,9 +19,10 @@ export default function MovieList({ initialMovies }: MovieListProps) {
   const [error, setError] = useState('');
   const [currentQuery, setCurrentQuery] = useState('');
 
-  // useEffect(() => {
-  //   setMovies(initialMovies);
-  // }, [initialMovies]);
+  useEffect(() => {
+    setMovies(initialMovies);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [JSON.stringify(initialMovies)]);
 
   const handleSearch = async (query: string) => {
     setCurrentQuery(query);

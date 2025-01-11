@@ -16,6 +16,7 @@ export default function Searchbar({ onSearch }: SearchbarProps) {
     if (debouncedValue) {
       onSearch(debouncedValue);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedValue]);
 
   const handleSearch = async (e: React.FormEvent) => {

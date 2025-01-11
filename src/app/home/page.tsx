@@ -1,17 +1,15 @@
 'use client';
 
 import MovieList from '@/components/MovieList';
-import { getPopularMovies } from '@/app/services/movieService';
 import LogoutButton from '@/components/LogoutButton';
 import { useEffect, useState } from 'react';
-import type { Movie } from '@/app/services/movieService';
 import { GET_POPULAR_MOVIES } from '../graphql/queries';
 import { useQuery } from '@apollo/client';
 import Pagination from '@/components/Pagination';
 
 export default function HomePage() {
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(0);
+  const [totalPages] = useState(0);
 
   const [pagesToShow, setPagesToShow] = useState([1, 2, 3, 4, 5]);
 
@@ -19,13 +17,11 @@ export default function HomePage() {
     variables: {
       pageNumber: currentPage,
     },
-    onCompleted: (data) => {
-      setTotalPages(data.getGraphqlPopularMovies.total_pages);
-    },
   });
 
   useEffect(() => {
     refetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage]);
 
   return (
@@ -51,7 +47,7 @@ export default function HomePage() {
         ) : (
           <>
             <MovieList
-              initialMovies={data?.getGraphqlPopularMovies.results}
+              initialMovies={data?.getGraphqlPopularMovies.results || []}
               currentPage={currentPage}
               setCurrentPage={setCurrentPage}
               totalPages={totalPages}
