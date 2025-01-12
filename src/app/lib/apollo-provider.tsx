@@ -9,8 +9,14 @@ import {
 import { setContext } from '@apollo/client/link/context';
 import { AuthProvider } from '../context/auth-context';
 
+const GRAPHQL_URL =
+  process.env.NEXT_PUBLIC_NODE_ENV === 'development'
+    ? 'http://localhost:4000/graphql'
+    : 'https://next-movie-backend-jet.vercel.app/graphql';
+
 const httpLink = createHttpLink({
-  uri: process.env.NEXT_PUBLIC_GRAPHQL_URL || 'http://localhost:4000/graphql',
+  uri: GRAPHQL_URL,
+  credentials: 'include',
 });
 
 const authLink = setContext((_, { headers }) => {
@@ -27,6 +33,7 @@ const authLink = setContext((_, { headers }) => {
 const client = new ApolloClient({
   link: authLink.concat(httpLink),
   cache: new InMemoryCache(),
+  credentials: 'include',
 });
 
 export function ApolloWrapper({ children }: { children: React.ReactNode }) {

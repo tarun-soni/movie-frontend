@@ -1,9 +1,11 @@
 'use client';
 
-import { useQuery } from '@apollo/client';
+import { useMutation, useQuery } from '@apollo/client';
 import { GET_MOVIE_REVIEWS } from '@/app/graphql/queries';
 import StarRating from './StarRating';
-
+import Button from './button';
+import { useAuth } from '@/app/context/auth-context';
+import { DELETE_MOVIE_REVIEW } from '@/app/graphql/mutations';
 interface UsersRatingProps {
   movieId: number;
 }
@@ -21,10 +23,39 @@ interface Review {
 }
 
 export default function UsersRating({ movieId }: UsersRatingProps) {
+  const { user } = useAuth();
   const { loading, error, data } = useQuery(GET_MOVIE_REVIEWS, {
     variables: { movieId: movieId.toString() },
     fetchPolicy: 'cache-and-network',
   });
+
+  const [deleteReview, { loading: deleteLoading }] = useMutation(
+    DELETE_MOVIE_REVIEW,
+    {
+      refetchQueries: [GET_MOVIE_REVIEWS],
+    }
+  );
+
+  const handleDeleteReview = async (reviewId: string) => {
+    try {
+      const response = await deleteReview({ variables: { reviewId } });
+
+      if (response.data.deleteMovieReview.message) {
+        alert('Review deleted successfully');
+      } else {
+        alert('Failed to delete review');
+      }
+    } catch (error) {
+      console.log('error', error);
+      if (error instanceof Error) {
+        alert(error.message);
+      } else {
+        alert('Failed to delete review');
+      }
+    }
+  };
+
+  const reviews: Review[] = data?.getMovieReviewByMovieId || [];
 
   if (loading && !data) {
     return (
@@ -43,8 +74,6 @@ export default function UsersRating({ movieId }: UsersRatingProps) {
     );
   }
 
-  const reviews: Review[] = data?.getMovieReviewByMovieId || [];
-
   return (
     <div className="space-y-4">
       <h3 className="text-lg font-semibold">User Reviews</h3>
@@ -57,15 +86,29 @@ export default function UsersRating({ movieId }: UsersRatingProps) {
               key={review._id}
               className="border border-border rounded-lg p-4 space-y-2"
             >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <span className="text-primary font-medium">
-                    <StarRating value={review.rating} />
-                  </span>
-                  <span className="text-sm text-muted-foreground">
-                    by {review.user.name}
-                  </span>
+              <div className="flex flex-row justify-between">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <span className="text-primary font-medium">
+                      <StarRating value={review.rating} />
+                    </span>
+                    <span className="text-sm text-muted-foreground">
+                      by {review.user.name}
+                    </span>
+                  </div>
                 </div>
+
+                {review.user._id === user._id && (
+                  <Button
+                    onClick={() => {
+                      handleDeleteReview(review._id);
+                    }}
+                    disabled={deleteLoading}
+                    className="bg-red-500 text-white px-4 py-2 rounded-md"
+                  >
+                    {deleteLoading ? 'Deleting...' : 'Delete'}
+                  </Button>
+                )}
               </div>
               {review?.reviewText && (
                 <div

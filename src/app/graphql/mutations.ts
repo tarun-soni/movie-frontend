@@ -48,3 +48,11 @@ export const SIGNUP_USER = gql`
     }
   }
 `;
+
+export const DELETE_MOVIE_REVIEW = gql`
+  mutation DeleteMovieReview($reviewId: String!) {
+    deleteMovieReview(reviewId: $reviewId) {
+      message
+    }
+  }
+`;

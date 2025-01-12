@@ -6,6 +6,7 @@ const BASE_URL = 'https://api.themoviedb.org/3';
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
+
     const page = searchParams.get('page') || '1';
 
     const apiUrl = `${BASE_URL}/movie/popular?api_key=${API_KEY}&language=en-US&page=${page}`;
@@ -16,7 +17,8 @@ export async function GET(request: NextRequest) {
     }
 
     const data = await response.json();
-    return NextResponse.json(data.results);
+
+    return NextResponse.json(data);
   } catch (error) {
     console.error('Error fetching movies:', error);
     return NextResponse.json(

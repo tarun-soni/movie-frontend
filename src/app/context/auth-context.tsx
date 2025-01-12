@@ -1,8 +1,8 @@
+// src/app/context/auth-context.tsx
 'use client';
 
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import Cookies from 'js-cookie';
 
 interface User {
   _id: string;
@@ -12,8 +12,7 @@ interface User {
 
 interface AuthContextType {
   user: User | null;
-  token: string | null;
-  login: (token: string, user: User) => void;
+  login: (user: User) => void;
   logout: () => void;
   isAuthenticated: boolean;
 }
@@ -22,52 +21,42 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(null);
   const router = useRouter();
 
   useEffect(() => {
-    const savedToken = Cookies.get('token');
-    const savedUser = Cookies.get('user');
+    // Check for user data in localStorage on mount
+    const storedUser = localStorage.getItem('user');
+    const storedToken = localStorage.getItem('token');
 
-    if (savedToken && savedUser) {
-      setToken(savedToken);
-      try {
-        setUser(JSON.parse(savedUser));
-      } catch (e) {
-        console.error('Failed to parse user data', e);
-        logout();
-      }
+    if (storedUser && storedToken) {
+      setUser(JSON.parse(storedUser));
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const login = (newToken: string, newUser: User) => {
-    setToken(newToken);
+  const login = (newUser: User) => {
     setUser(newUser);
-
-    // Set cookies with expiry
-    Cookies.set('token', newToken, { expires: 7 }); // 7 days
-    Cookies.set('user', JSON.stringify(newUser), { expires: 7 });
-
+    localStorage.setItem('user', JSON.stringify(newUser));
     router.replace('/home');
   };
 
-  const logout = () => {
-    Cookies.remove('token');
-    Cookies.remove('user');
-    setToken(null);
-    setUser(null);
-    router.replace('/auth/login');
+  const logout = async () => {
+    try {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      setUser(null);
+      router.replace('/auth/login');
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
   };
 
   return (
     <AuthContext.Provider
       value={{
         user,
-        token,
         login,
         logout,
-        isAuthenticated: !!token,
+        isAuthenticated: !!user,
       }}
     >
       {children}

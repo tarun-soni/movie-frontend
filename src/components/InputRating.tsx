@@ -118,6 +118,7 @@ export default function InputRating({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (!user?._id) {
       setError('Please login to submit a review');
       return;
