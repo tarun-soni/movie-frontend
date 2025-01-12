@@ -38,8 +38,8 @@ const client = new ApolloClient({
 
 export function ApolloWrapper({ children }: { children: React.ReactNode }) {
   return (
-    <AuthProvider>
-      <ApolloProvider client={client}>{children}</ApolloProvider>
-    </AuthProvider>
+    <ApolloProvider client={client}>
+      <AuthProvider client={client}>{children}</AuthProvider>
+    </ApolloProvider>
   );
 }
