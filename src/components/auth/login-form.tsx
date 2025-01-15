@@ -5,8 +5,8 @@ import Input from '../input';
 
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/app/context/auth-context';
-import { useMutation } from '@apollo/client';
-import { LOGIN_USER } from '@/app/graphql/mutations';
+
+import { useLoginMutation } from '@/__generated__/graphql';
 
 export default function LoginForm() {
   const [email, setEmail] = useState('t2@gmail.com');
@@ -15,7 +15,7 @@ export default function LoginForm() {
   const { login } = useAuth();
   const router = useRouter();
 
-  const [loginUser, { loading }] = useMutation(LOGIN_USER);
+  const [loginUser, { loading }] = useLoginMutation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -1,0 +1,29 @@
+query GetMovieReviews($movieId: String!) {
+  getMovieReviewByMovieId(movieId: $movieId) {
+    _id
+    movieId
+    rating
+    reviewText
+    user {
+      _id
+      name
+      email
+    }
+  }
+}
+
+query GetGraphqlPopularMovies($pageNumber: Int) {
+  getGraphqlPopularMovies(pageNumber: $pageNumber) {
+    total_pages
+    total_results
+    results {
+      id
+      title
+      adult
+      overview
+      poster_path
+      release_date
+      vote_average
+    }
+  }
+}

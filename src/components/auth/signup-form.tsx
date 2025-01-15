@@ -4,8 +4,7 @@ import { useState } from 'react';
 import Input from '../input';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/app/context/auth-context';
-import { useMutation } from '@apollo/client';
-import { SIGNUP_USER } from '@/app/graphql/mutations';
+import { useCreateUserMutation } from '@/__generated__/graphql';
 
 export default function SignupForm() {
   const [name, setName] = useState('');
@@ -15,7 +14,7 @@ export default function SignupForm() {
   const { login } = useAuth();
   const router = useRouter();
 
-  const [signupUser, { loading }] = useMutation(SIGNUP_USER);
+  const [signupUser, { loading }] = useCreateUserMutation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

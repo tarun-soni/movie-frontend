@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { GET_POPULAR_MOVIES } from '../graphql/queries';
 import { useQuery } from '@apollo/client';
 import Pagination from '@/components/Pagination';
+import { useGetGraphqlPopularMoviesQuery } from '@/__generated__/graphql';
 
 export default function HomePage() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -13,7 +14,7 @@ export default function HomePage() {
 
   const [pagesToShow, setPagesToShow] = useState([1, 2, 3, 4, 5]);
 
-  const { data, loading, refetch, error } = useQuery(GET_POPULAR_MOVIES, {
+  const { data, loading, refetch, error } = useGetGraphqlPopularMoviesQuery({
     variables: {
       pageNumber: currentPage,
     },

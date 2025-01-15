@@ -11,6 +11,7 @@ import { useMutation } from '@apollo/client';
 import { ADD_MOVIE_REVIEW } from '@/app/graphql/mutations';
 import { useAuth } from '@/app/context/auth-context';
 import { GET_MOVIE_REVIEWS } from '@/app/graphql/queries';
+import { useCreateMovieReviewMutation } from '@/__generated__/graphql';
 
 interface InputRatingProps {
   movieId: number;
@@ -81,7 +82,8 @@ export default function InputRating({
   const [rating, setRating] = useState(0);
   const [error, setError] = useState('');
   const { user } = useAuth();
-  const [addMovieReview, { loading }] = useMutation(ADD_MOVIE_REVIEW, {
+
+  const [addMovieReview, { loading }] = useCreateMovieReviewMutation({
     refetchQueries: [
       {
         query: GET_MOVIE_REVIEWS,

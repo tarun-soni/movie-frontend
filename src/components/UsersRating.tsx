@@ -6,6 +6,8 @@ import StarRating from './StarRating';
 import Button from './button';
 import { useAuth } from '@/app/context/auth-context';
 import { DELETE_MOVIE_REVIEW } from '@/app/graphql/mutations';
+
+import { useGetMovieReviewsQuery } from '@/__generated__/graphql';
 interface UsersRatingProps {
   movieId: number;
 }
@@ -24,10 +26,13 @@ interface Review {
 
 export default function UsersRating({ movieId }: UsersRatingProps) {
   const { user } = useAuth();
-  const { loading, error, data } = useQuery(GET_MOVIE_REVIEWS, {
+
+  const { loading, error, data } = useGetMovieReviewsQuery({
     variables: { movieId: movieId.toString() },
     fetchPolicy: 'cache-and-network',
   });
+
+  console.log('newData', data);
 
   const [deleteReview, { loading: deleteLoading }] = useMutation(
     DELETE_MOVIE_REVIEW,
@@ -55,7 +60,7 @@ export default function UsersRating({ movieId }: UsersRatingProps) {
     }
   };
 
-  const reviews: Review[] = data?.getMovieReviewByMovieId || [];
+  const reviews = data?.getMovieReviewByMovieId || [];
 
   if (loading && !data) {
     return (
