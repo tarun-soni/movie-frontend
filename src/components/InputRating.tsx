@@ -7,11 +7,12 @@ import Paragraph from '@tiptap/extension-paragraph';
 import Text from '@tiptap/extension-text';
 import Heading from '@tiptap/extension-heading';
 import Blockquote from '@tiptap/extension-blockquote';
-import { useMutation } from '@apollo/client';
-import { ADD_MOVIE_REVIEW } from '@/app/graphql/mutations';
 import { useAuth } from '@/app/context/auth-context';
-import { GET_MOVIE_REVIEWS } from '@/app/graphql/queries';
-import { useCreateMovieReviewMutation } from '@/__generated__/graphql';
+
+import {
+  GetMovieReviewsDocument,
+  useCreateMovieReviewMutation,
+} from '@/__generated__/graphql';
 
 interface InputRatingProps {
   movieId: number;
@@ -86,7 +87,7 @@ export default function InputRating({
   const [addMovieReview, { loading }] = useCreateMovieReviewMutation({
     refetchQueries: [
       {
-        query: GET_MOVIE_REVIEWS,
+        query: GetMovieReviewsDocument,
         variables: { movieId: movieId.toString() },
       },
     ],

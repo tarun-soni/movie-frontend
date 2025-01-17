@@ -2,7 +2,7 @@
 
 import { useEffect, useState, Dispatch, SetStateAction } from 'react';
 import { searchMovies } from '@/app/services/movieService';
-import type { Movie } from '@/app/services/movieService';
+import { Movie } from '@/__generated__/graphql';
 import MovieCard from './MovieCard';
 import Searchbar from './searchbar';
 

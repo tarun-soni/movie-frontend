@@ -1,10 +1,7 @@
-export interface Movie {
-  id: number;
-  title: string;
-  overview: string;
-  poster_path: string;
-  release_date: string;
-  vote_average: number;
+import { Movie as MovieType } from '@/__generated__/graphql';
+
+export interface Movie extends MovieType {
+  id?: number;
 }
 
 export async function getPopularMovies(page: number = 1) {

@@ -1,28 +1,28 @@
 'use client';
 
-import { useMutation, useQuery } from '@apollo/client';
-import { GET_MOVIE_REVIEWS } from '@/app/graphql/queries';
 import StarRating from './StarRating';
 import Button from './button';
 import { useAuth } from '@/app/context/auth-context';
-import { DELETE_MOVIE_REVIEW } from '@/app/graphql/mutations';
-
-import { useGetMovieReviewsQuery } from '@/__generated__/graphql';
+import { GetMovieReviewsDocument } from '@/__generated__/graphql';
+import {
+  useDeleteMovieReviewMutation,
+  useGetMovieReviewsQuery,
+} from '@/__generated__/graphql';
 interface UsersRatingProps {
   movieId: number;
 }
 
-interface Review {
-  _id: string;
-  movieId: string;
-  rating: number;
-  reviewText: string;
-  user: {
-    _id: string;
-    name: string;
-    email: string;
-  };
-}
+// interface Review {
+//   _id: string;
+//   movieId: string;
+//   rating: number;
+//   reviewText: string;
+//   user: {
+//     _id: string;
+//     name: string;
+//     email: string;
+//   };
+// }
 
 export default function UsersRating({ movieId }: UsersRatingProps) {
   const { user } = useAuth();
@@ -32,14 +32,10 @@ export default function UsersRating({ movieId }: UsersRatingProps) {
     fetchPolicy: 'cache-and-network',
   });
 
-  console.log('newData', data);
-
-  const [deleteReview, { loading: deleteLoading }] = useMutation(
-    DELETE_MOVIE_REVIEW,
-    {
-      refetchQueries: [GET_MOVIE_REVIEWS],
-    }
-  );
+  const [deleteReview, { loading: deleteLoading }] =
+    useDeleteMovieReviewMutation({
+      refetchQueries: [GetMovieReviewsDocument],
+    });
 
   const handleDeleteReview = async (reviewId: string) => {
     try {

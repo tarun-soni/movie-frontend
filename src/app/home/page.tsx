@@ -3,8 +3,6 @@
 import MovieList from '@/components/MovieList';
 import LogoutButton from '@/components/LogoutButton';
 import { useEffect, useState } from 'react';
-import { GET_POPULAR_MOVIES } from '../graphql/queries';
-import { useQuery } from '@apollo/client';
 import Pagination from '@/components/Pagination';
 import { useGetGraphqlPopularMoviesQuery } from '@/__generated__/graphql';
 
