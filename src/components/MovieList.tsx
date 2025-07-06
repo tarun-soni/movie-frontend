@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, Dispatch, SetStateAction } from 'react';
+import { useEffect, useState } from 'react';
 import { searchMovies } from '@/app/services/movieService';
 import { Movie } from '@/__generated__/graphql';
 import MovieCard from './MovieCard';
@@ -8,9 +8,6 @@ import Searchbar from './searchbar';
 
 interface MovieListProps {
   initialMovies: Movie[];
-  currentPage: number;
-  setCurrentPage: Dispatch<SetStateAction<number>>;
-  totalPages: number;
 }
 
 export default function MovieList({ initialMovies }: MovieListProps) {
@@ -40,6 +37,7 @@ export default function MovieList({ initialMovies }: MovieListProps) {
       setMovies(searchResults);
     } catch (err) {
       console.error('Failed to search movies', err);
+      setError('Failed to search movies. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -80,15 +78,6 @@ export default function MovieList({ initialMovies }: MovieListProps) {
             {movies.map((movie) => (
               <MovieCard key={movie.id} movie={movie} />
             ))}
-          </div>
-          <div className="w-full flex flex-row justify-center ">
-            {/* <Pagination
-              onPrevClick={onPrevClick}
-              onNextClick={onNextClick}
-              totalPages={totalPages}
-              currentPage={currentPage}
-              onPageClick={onPageClick}
-            /> */}
           </div>
         </>
       )}

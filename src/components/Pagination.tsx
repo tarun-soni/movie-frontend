@@ -1,42 +1,53 @@
 import Button from './button';
 
-const Pagination = (props) => {
-  const {
-    onPrevClick,
-    onNextClick,
-    totalPages,
-    currentPage,
-    onPageClick,
-    pagesToShow,
-    setPagesToShow,
-  } = props;
+interface PaginationProps {
+  onPrevClick: () => void;
+  onNextClick: () => void;
+  totalPages: number;
+  currentPage: number;
+  onPageClick: (pageNumber: number) => void;
+  pagesToShow: number[];
+  setPagesToShow: (pages: number[]) => void;
+}
 
+const Pagination = ({
+  onPrevClick,
+  onNextClick,
+  totalPages,
+  currentPage,
+  onPageClick,
+  pagesToShow,
+  setPagesToShow,
+}: PaginationProps) => {
   const prevButtonHandler = () => {
-    const _pagesToShow = [...pagesToShow];
-    _pagesToShow.unshift(pagesToShow[0] - 1);
-    _pagesToShow.pop();
-
-    setPagesToShow(_pagesToShow);
+    if (currentPage <= 1) return;
+    
+    const firstPage = pagesToShow[0];
+    if (firstPage > 1) {
+      const _pagesToShow = [...pagesToShow];
+      _pagesToShow.unshift(firstPage - 1);
+      _pagesToShow.pop();
+      setPagesToShow(_pagesToShow);
+    }
 
     onPrevClick();
   };
+
   const nextButtonHandler = () => {
-    // if the current page is not in the pagesToShow array, shift it
-
-    const _pagesToShow = [
-      ...pagesToShow,
-      pagesToShow[pagesToShow.length - 1] + 1,
-    ];
-
-    _pagesToShow.shift();
-
-    setPagesToShow(_pagesToShow);
+    if (currentPage >= totalPages) return;
+    
+    const lastPage = pagesToShow[pagesToShow.length - 1];
+    if (lastPage < totalPages) {
+      const _pagesToShow = [...pagesToShow, lastPage + 1];
+      _pagesToShow.shift();
+      setPagesToShow(_pagesToShow);
+    }
 
     onNextClick();
   };
 
   return (
-    <div className="flex flex-row justify-center p-4 just">
+    <div className="flex flex-row justify-center p-4">
       <div className="flex flex-row justify-center p-4 mx-4">
         <Button
           onClick={prevButtonHandler}
@@ -57,6 +68,7 @@ const Pagination = (props) => {
             </Button>
           </div>
         ))}
+        
         <Button
           onClick={nextButtonHandler}
           variant="secondary"

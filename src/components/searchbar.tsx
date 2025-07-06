@@ -1,6 +1,6 @@
 'use client';
 
-import useDebounce from '@/hooks/useDounce';
+import useDebounce from '@/hooks/useDebounce';
 import { useEffect, useState } from 'react';
 
 interface SearchbarProps {
