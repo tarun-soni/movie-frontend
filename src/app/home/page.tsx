@@ -8,8 +8,7 @@ import { useGetGraphqlPopularMoviesQuery } from '@/__generated__/graphql';
 
 export default function HomePage() {
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages] = useState(0);
-
+  const [totalPages, setTotalPages] = useState(0);
   const [pagesToShow, setPagesToShow] = useState([1, 2, 3, 4, 5]);
 
   const { data, loading, refetch, error } = useGetGraphqlPopularMoviesQuery({
@@ -22,6 +21,12 @@ export default function HomePage() {
     refetch();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage]);
+
+  useEffect(() => {
+    if (data?.getGraphqlPopularMovies?.total_pages) {
+      setTotalPages(data.getGraphqlPopularMovies.total_pages);
+    }
+  }, [data]);
 
   return (
     <div className="min-h-screen p-4 sm:p-6 lg:p-8">
@@ -47,21 +52,20 @@ export default function HomePage() {
           <>
             <MovieList
               initialMovies={data?.getGraphqlPopularMovies.results || []}
-              currentPage={currentPage}
-              setCurrentPage={setCurrentPage}
-              totalPages={totalPages}
             />
-            <Pagination
-              onPrevClick={() => setCurrentPage(currentPage - 1)}
-              onNextClick={() => setCurrentPage(currentPage + 1)}
-              totalPages={totalPages}
-              currentPage={currentPage}
-              onPageClick={(pageNumber) => {
-                setCurrentPage(pageNumber);
-              }}
-              pagesToShow={pagesToShow}
-              setPagesToShow={setPagesToShow}
-            />
+            {totalPages > 1 && (
+              <Pagination
+                onPrevClick={() => setCurrentPage(currentPage - 1)}
+                onNextClick={() => setCurrentPage(currentPage + 1)}
+                totalPages={totalPages}
+                currentPage={currentPage}
+                onPageClick={(pageNumber) => {
+                  setCurrentPage(pageNumber);
+                }}
+                pagesToShow={pagesToShow}
+                setPagesToShow={setPagesToShow}
+              />
+            )}
           </>
         )}
       </div>
